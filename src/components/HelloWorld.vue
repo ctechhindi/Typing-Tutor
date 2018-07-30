@@ -3,12 +3,7 @@
     <section class="hero is-primary">
       <div class="hero-body">
         <div class="container">
-          <h1 class="title">
-            Hero title
-          </h1>
-          <h2 class="subtitle">
-            Hero subtitle
-          </h2>
+          <h1 class="title" id="lesson"></h1>
         </div>
       </div>
     </section>
@@ -157,12 +152,86 @@ export default {
   name: "HelloWorld",
   data() {
     return {
-      //
+      count: 0,
+      word: false,
+      lessons: [
+        "a s d j k l  a s d j k l  a s d j k l",
+        "aa ss dd ff jj kk ll aa ss dd ff jj kk ll",
+        "asd asd asd asdf asdf jkl jkl jkl jkl",
+        "qwerty qwerty uioop uiop uiop",
+        "learning is always a fun we love to learn we are happy",
+        "kathmandu university dhulikhel nepal",
+        "final project demo presentation at leapfrog technology inc",
+        "i am bijaya prasad kuikel bijayananda from kathmandu university i learnt so many things and today i completed this project i am really happy to learn this please tell me how are you feeling thank you"
+      ]
     };
   },
+  methods: {
+    getRandomNumber: function(min, max) {
+      var ran = Math.floor(Math.random() * (max - min) + min);
+      // console.log(ran);
+      return ran;
+    },
+
+    // this function is main one which generates the lessons/ words
+    generateWords: function() {
+      var that = this;
+
+      that.count = 0;
+      var totalLessons = that.lessons.length;
+
+      // we need to get random number from the above array so pass the parameters
+      var lessonsNum = that.getRandomNumber(0, totalLessons);
+
+      that.word = that.lessons[lessonsNum];
+
+      // here goes the core code for displaying the contents got from the array;
+      var lesson = document.getElementById("lesson");
+
+      var newDiv = document.createElement("div");
+      newDiv.setAttribute("id", "thisClass");
+      lesson.appendChild(newDiv);
+
+      for (var i = 0; i < that.word.length; i++) {
+        var spans = document.createElement("span");
+        spans.setAttribute("id", "span" + i);
+        spans.innerHTML = that.word[i];
+        newDiv.appendChild(spans);
+      }
+
+      // this piece of code will highlight the first element
+			this.highlight(0);
+    },
+
+    // this function is used to highlight .. it will give hint for which letter to type
+    highlight: function(cnt) {
+      // check on consoles you may see something interesting :P
+      console.log("count is : " + this.count);
+      console.log("cnt is : ", +cnt);
+      if (cnt < this.word.length) {
+        var get = document.getElementById("span" + cnt);
+        get.style.background = "cyan";
+      }
+    },
+
+    // this function will check if we need the new word
+    checkNewWord: function() {
+      if (this.count === this.word.length) {
+        // we will reset the value of matched and error to 0 again
+        var tags = document.getElementById("lesson");
+        // delete the class thisclass
+        var deleteid = document.getElementById("thisClass");
+        tags.removeChild(deleteid);
+        // again lets generate words means we will create the above deleted class again
+        this.generateWords();
+      }
+    }
+  },
   mounted() {
-    // that = this;
+    var that = this;
     window.$ = window.jQuery = require("jquery");
+
+    this.generateWords();
 
     function isCapsLock(status) {
       var capsLockBtn = $("#CapsLock");
@@ -170,27 +239,25 @@ export default {
 
       // Active Button Backgroud
       if (status === true) {
-
         capsLockBtn.addClass("active");
 
         /**
          * All Character [uppercase]
          */
-        if (typeof(allChar) == "object") {
-          $.each(allChar, function (index, el) {
-            $(el).css("text-transform", "uppercase")
+        if (typeof allChar == "object") {
+          $.each(allChar, function(index, el) {
+            $(el).css("text-transform", "uppercase");
           });
         }
-
       } else {
         capsLockBtn.removeClass("active");
 
         /**
          * All Character [lowercase]
          */
-        if (typeof(allChar) == "object") {
-          $.each(allChar, function (index, el) {
-            $(el).css("text-transform", "lowercase")
+        if (typeof allChar == "object") {
+          $.each(allChar, function(index, el) {
+            $(el).css("text-transform", "lowercase");
           });
         }
       }
@@ -203,8 +270,8 @@ export default {
       var isShift = event.shiftKey; // shift key active
       var isCapsLockValue = event.getModifierState("CapsLock"); // CapsLock key active
 
-      console.log(event);
-      console.log(isCapsLockValue);
+      // console.log(event);
+      // console.log(isCapsLockValue);
       isCapsLock(isCapsLockValue);
 
       /**
@@ -250,7 +317,6 @@ export default {
          * All Character [uppercase, lowercase]
          */
         if (typeof allChar == "object") {
-          
           if (isCapsLockValue === true) {
             $.each(allChar, function(index, el) {
               $(el).css("text-transform", "lowercase");
@@ -267,6 +333,37 @@ export default {
             });
           }
         }
+      }
+
+      if (
+        (keyValue > 47 && keyValue < 58) ||
+        (keyValue > 64 && keyValue < 91) ||
+        (keyValue > 96 && keyValue < 123) ||
+        keyValue == 32
+      ) {
+        var cnt = that.count + 1;
+        that.highlight(cnt);
+
+        var inputToNum = String.fromCharCode(keyValue).toLowerCase();
+        console.log("Input Value : " + inputToNum);
+
+        var check = that.word.charAt(that.count);
+        console.log("Word Value : " + check);
+
+        if (inputToNum === check) {
+          console.log("Word Matched.");
+          var getSpan = document.getElementById("span" + that.count);
+          getSpan.style.color = "blue";
+          getSpan.style.background = "none";
+          that.count++;
+        } else {
+          console.error("Word Not Matched.");
+          var getSpan = document.getElementById("span" + that.count);
+          getSpan.style.color = "white";
+          getSpan.style.background = "red";
+          that.count++;
+        }
+        that.checkNewWord();
       }
     };
   }
