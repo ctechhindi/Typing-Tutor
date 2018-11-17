@@ -7,6 +7,36 @@
         </div>
       </div>
     </section>
+    <section class="hero is-success">
+      <div class="hero-body" style="padding: 1rem 0.5rem;">
+        <nav class="level">
+          <div class="level-item has-text-centered">
+            <div title="Gross Word Per Minute">
+              <p class="heading">GWPM</p>
+              <p class="title">0.00</p>
+            </div>
+          </div>
+          <div class="level-item has-text-centered">
+            <div title="Net Word Per Minute">
+              <p class="heading">NWPM</p>
+              <p class="title">0.00</p>
+            </div>
+          </div>
+          <div class="level-item has-text-centered">
+            <div title="Accuracy">
+              <p class="heading">ACCURACY</p>
+              <p class="title">0 %</p>
+            </div>
+          </div>
+          <div class="level-item has-text-centered">
+            <div title="Time">
+              <p class="heading">TIME</p>
+              <p class="title">00:00</p>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </section>
     <br/>
     <div class="container">
       <div id="keyboard">
@@ -155,10 +185,10 @@ export default {
       count: 0,
       word: false,
       lessons: [
-        "learning is always a fun we love to learn we are happy",
-        "kathmandu university dhulikhel nepal",
-        "final project demo presentation at leapfrog technology inc",
-        "i am bijaya prasad kuikel bijayananda from kathmandu university i learnt so many things and today i completed this project i am really happy to learn this please tell me how are you feeling thank you"
+        "India's first bullet train is going to be built between Mumbai and Ahmedabad for various reasons. We are all excited about the same. It will be the fastest mode of transport on the ground between Mumbai and Ahmedabad. Right now, travel time between Mumbai and Ahmedabad through trains is 8 hours. It will be brought down to just 3 hours with the help of bullet trains. But, that is not all that you should be excited about in this venture. Apparently, the train will go travel below the sea for 21 kilometers during the travel. Yes, you heard it right. For a stretch of 21 kilometers, the bullet train will go below the sea, as shown in the video. In a bid to modernize the Indian railways and to make travel by Indian railways an overall pleasant experience, Railway is taking a lot of steps. Suresh Prabhu, India's Railway minister, has emphasized on the importance of upgrading coaches in trains. The railways is planning to do the same and bring the railway coaches on par with those in European countries."
+        // "kathmandu university dhulikhel nepal",
+        // "final project demo presentation at leapfrog technology inc",
+        // "i am bijaya prasad kuikel bijayananda from kathmandu university i learnt so many things and today i completed this project i am really happy to learn this please tell me how are you feeling thank you"
       ]
     };
   },
@@ -196,7 +226,7 @@ export default {
       }
 
       // this piece of code will highlight the first element
-			this.highlight(0);
+      this.highlight(0);
     },
 
     // this function is used to highlight .. it will give hint for which letter to type
@@ -269,9 +299,22 @@ export default {
       var isShift = event.shiftKey; // shift key active
       var isCapsLockValue = event.getModifierState("CapsLock"); // CapsLock key active
 
-      // console.log(event);
+      // console.log(event.which);
       // console.log(isCapsLockValue);
       isCapsLock(isCapsLockValue);
+
+      // Scroll Words
+      // console.log(that.count);
+      if (that.count > 0) {
+        var scrollTo = $("#thisClass span:nth-child(" + that.count + ")");
+        $("#thisClass").animate({
+          scrollTop:
+            scrollTo.offset().top -
+            $("#thisClass").offset().top +
+            $("#thisClass").scrollTop()
+        });
+        // debugger
+      }
 
       /**
        * Active/Deactive Key
@@ -334,12 +377,24 @@ export default {
         (keyValue > 47 && keyValue < 58) ||
         (keyValue > 64 && keyValue < 91) ||
         (keyValue > 96 && keyValue < 123) ||
-        keyValue == 32
+        keyValue == 32 ||
+        keyValue == 222 ||
+        keyValue == 190 ||
+        keyValue == 192 ||
+        keyValue == 187 ||
+        keyValue == 219 ||
+        keyValue == 221 ||
+        keyValue == 220 ||
+        keyValue == 186 ||
+        keyValue == 222 ||
+        keyValue == 188 ||
+        keyValue == 191
       ) {
         var cnt = that.count + 1;
         that.highlight(cnt);
 
-        var inputToNum = String.fromCharCode(keyValue).toLowerCase();
+        // var inputToNum = String.fromCharCode(keyValue).toLowerCase();
+        var inputToNum = key;
         console.log("Input Value : " + inputToNum);
 
         var check = that.word.charAt(that.count);
@@ -408,5 +463,38 @@ export default {
 
 #keyboard ul li.active {
   background: rgb(51, 170, 250);
+}
+
+/** Typing Content Div */
+#thisClass {
+  width: 96.4%;
+  height: 113px;
+  overflow-y: scroll;
+}
+
+/**
+ * Custom Scrollbar Styling
+ * https://codepen.io/devstreak/pen/dMYgeO
+ */
+#thisClass::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #f5f5f5;
+  border-radius: 10px;
+}
+
+#thisClass::-webkit-scrollbar {
+  width: 10px;
+  background-color: #f5f5f5;
+}
+
+#thisClass::-webkit-scrollbar-thumb {
+  background-image: -webkit-gradient(
+    linear,
+    left bottom,
+    left top,
+    color-stop(0.44, rgb(122, 153, 217)),
+    color-stop(0.72, rgb(73, 125, 189)),
+    color-stop(0.86, rgb(28, 58, 148))
+  );
 }
 </style>
