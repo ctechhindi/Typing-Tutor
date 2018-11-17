@@ -149,16 +149,12 @@
 import $ from "jquery";
 
 export default {
-  name: "HelloWorld",
+  name: "EnglishTyping",
   data() {
     return {
       count: 0,
       word: false,
       lessons: [
-        "a s d j k l  a s d j k l  a s d j k l",
-        "aa ss dd ff jj kk ll aa ss dd ff jj kk ll",
-        "asd asd asd asdf asdf jkl jkl jkl jkl",
-        "qwerty qwerty uioop uiop uiop",
         "learning is always a fun we love to learn we are happy",
         "kathmandu university dhulikhel nepal",
         "final project demo presentation at leapfrog technology inc",
@@ -211,6 +207,9 @@ export default {
       if (cnt < this.word.length) {
         var get = document.getElementById("span" + cnt);
         get.style.background = "cyan";
+        get.style.color = "#28463b";
+        get.style.padding = "5px";
+        get.style.border = "2px solid black";
       }
     },
 
@@ -284,10 +283,6 @@ export default {
           // Check Shift Key Active
           if (isShift) {
             id.css("text-transform", "uppercase");
-
-            // setTimeout(function() {
-            //   id.css("text-transform", "lowercase");
-            // }, 150);
           }
 
           id.addClass("active");
@@ -355,12 +350,18 @@ export default {
           var getSpan = document.getElementById("span" + that.count);
           getSpan.style.color = "blue";
           getSpan.style.background = "none";
+          getSpan.style.color = "#fff";
+          getSpan.style.padding = "0px";
+          getSpan.style.border = "0px solid black";
           that.count++;
         } else {
           console.error("Word Not Matched.");
           var getSpan = document.getElementById("span" + that.count);
           getSpan.style.color = "white";
           getSpan.style.background = "red";
+          getSpan.style.color = "#fff";
+          getSpan.style.padding = "0px";
+          getSpan.style.border = "0px solid black";
           that.count++;
         }
         that.checkNewWord();

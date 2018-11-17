@@ -2,11 +2,56 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>english-typing-tutor</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Easy Typing</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="<%= htmlWebpackPlugin.files.publicPath %>static/logo/logo-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="<%= htmlWebpackPlugin.files.publicPath %>static/logo/logo-16.png">
+    <!--[if IE]><link rel="shortcut icon" href="/static/img/icons/favicon.ico"><![endif]-->
+
+    <meta name="title" content="Easy Typing">
+    <meta name="description" content="Easy Typing">
+    <meta name="keywords" content="Easy Typing">
+    <meta name="author" content="jeevan lal">
+
+    <!-- <meta property="og:url" content="https://youtubeblade.netlify.com/"/>
+    <meta property="og:title" content="YouTube Blade">
+    <meta property="og:type" content="website"/>
+    <meta property="og:site_name" content="youtubeblade.netlify.com" />
+    <meta property="og:description" content="The YouTube Blade application gives better features to your channel like Real-Time Subscriber Count, YouTube Video Random Comments Picker, Video Giveaway Winners Choose, YouTube Channel Statistics and more.."/>
+    <meta content='https://2.bp.blogspot.com/-jG9qzCxQKV8/WlXI4u6eB5I/AAAAAAAAABg/kbUtaqt3jyIztKTln9fSV0xY01nfOCtXgCLcBGAs/w1200-h630-p-k-no-nu/logo.png' property='og:image'/>
+    <meta property="og:publisher" content="">
+    <meta property="og:image" content="https://youtube-cm2.netlify.com/static/img/icons/logo.png"/>
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="YouTube Blade" />
+    <meta name="twitter:description" content="The YouTube Blade application gives better features to your channel like Real-Time Subscriber Count, YouTube Video Random Comments Picker, Video Giveaway Winners Choose, YouTube Channel Statistics and more.."/>
+    <meta name="twitter:image" content="https://youtube-cm2.netlify.com/static/img/icons/logo.png"/> -->
+
+    <!-- Add to home screen for Android and modern mobile browsers -->
+    <link rel="manifest" href="<%= htmlWebpackPlugin.files.publicPath %>static/manifest.json">
+    <meta name="theme-color" content="#4DBA87">
+    <!-- Add to home screen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="demo">
+    <link rel="apple-touch-icon" href="<%= htmlWebpackPlugin.files.publicPath %>static/logo/logo-128.png">
+    <link rel="mask-icon" href="<%= htmlWebpackPlugin.files.publicPath %>static/logo/logo.svg" color="#4DBA87">
+    <!-- Add to home screen for Windows -->
+    <meta name="msapplication-TileImage" content="<%= htmlWebpackPlugin.files.publicPath %>static/logo/logo-256.png">
+    <meta name="msapplication-TileColor" content="#000000">
+    <% for (var chunk of webpack.chunks) {
+      for (var file of chunk.files) {
+        if (file.match(/\.(js|css)$/)) { %>
+    <link rel="<%= chunk.initial?'preload':'prefetch' %>" href="<%= htmlWebpackPlugin.files.publicPath + file %>" as="<%= file.match(/\.css$/)?'style':'script' %>"><% }}} %>
   </head>
   <body>
+    <noscript>
+      This is your fallback content in case JavaScript fails to load.
+    </noscript>
     <div id="app"></div>
+    <!-- Todo: only include in production -->
+    <%= htmlWebpackPlugin.options.serviceWorkerLoader %>
     <!-- built files will be auto injected -->
   </body>
 </html>
