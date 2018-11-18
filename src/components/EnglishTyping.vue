@@ -232,8 +232,8 @@ export default {
     // this function is used to highlight .. it will give hint for which letter to type
     highlight: function(cnt) {
       // check on consoles you may see something interesting :P
-      console.log("count is : " + this.count);
-      console.log("cnt is : ", +cnt);
+      // console.log("count is : " + this.count);
+      // console.log("cnt is : ", +cnt);
       if (cnt < this.word.length) {
         var get = document.getElementById("span" + cnt);
         get.style.background = "cyan";
@@ -292,6 +292,8 @@ export default {
       }
     }
 
+    var chekOldScrollValue = ""; // Scroll Typing Content
+
     window.onkeydown = function(event) {
       var key = event.key; // keyboard key
       var keyValue = event.which; // keyboard key value
@@ -303,17 +305,20 @@ export default {
       // console.log(isCapsLockValue);
       isCapsLock(isCapsLockValue);
 
-      // Scroll Words
-      // console.log(that.count);
+      // Scroll Typing Content
       if (that.count > 0) {
-        var scrollTo = $("#thisClass span:nth-child(" + that.count + ")");
-        $("#thisClass").animate({
-          scrollTop:
-            scrollTo.offset().top -
-            $("#thisClass").offset().top +
-            $("#thisClass").scrollTop()
-        });
-        // debugger
+        var scrollTo = $("#thisClass span:nth-child(" + (that.count + 1) + ")");
+        var scrollToValue =
+          scrollTo.offset().top -
+          $("#thisClass").offset().top +
+          $("#thisClass").scrollTop();
+
+        if (scrollToValue !== chekOldScrollValue) {
+          $("#thisClass").animate({
+            scrollTop: scrollToValue
+          });
+          chekOldScrollValue = scrollToValue;
+        }
       }
 
       /**
@@ -395,13 +400,13 @@ export default {
 
         // var inputToNum = String.fromCharCode(keyValue).toLowerCase();
         var inputToNum = key;
-        console.log("Input Value : " + inputToNum);
+        // console.log("Input Value : " + inputToNum);
 
         var check = that.word.charAt(that.count);
-        console.log("Word Value : " + check);
+        // console.log("Word Value : " + check);
 
         if (inputToNum === check) {
-          console.log("Word Matched.");
+          // console.log("Word Matched.");
           var getSpan = document.getElementById("span" + that.count);
           getSpan.style.color = "blue";
           getSpan.style.background = "none";
