@@ -10,9 +10,10 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "@xkeshi/vue-countdown": "^1.0.1",
     "buefy": "^0.7.0",
     "url-parse": "^1.4.4",
-    "vue": "^2.5.2",
+    "vue": "^2.5.16",
     "vue-router": "^3.0.1"
   },
   "devDependencies": {

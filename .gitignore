@@ -1,6 +1,7 @@
 .DS_Store
 node_modules/
-/dist/
+/dist/static/css/*.map
+/dist/static/js/*.map
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

@@ -1,7 +1,7 @@
 <template>
   <div class="hello">
     <section class="hero is-primary">
-      <div class="hero-body">
+      <div class="hero-body" style="padding: 2rem 1.5rem;">
         <div class="container">
           <h1 class="title" id="lesson"></h1>
         </div>
@@ -13,25 +13,41 @@
           <div class="level-item has-text-centered">
             <div title="Gross Word Per Minute">
               <p class="heading">GWPM</p>
-              <p class="title">0.00</p>
+              <p class="title">{{ result.GrossWPM }}</p>
             </div>
           </div>
           <div class="level-item has-text-centered">
             <div title="Net Word Per Minute">
               <p class="heading">NWPM</p>
-              <p class="title">0.00</p>
+              <p class="title">{{ result.NetWPM }}</p>
             </div>
           </div>
           <div class="level-item has-text-centered">
             <div title="Accuracy">
-              <p class="heading">ACCURACY</p>
-              <p class="title">0 %</p>
+              <p class="heading">ACCURACY ({{ result.totalWrongChar }})</p>
+              <p class="title">{{ result.Accuracy }} %</p>
+            </div>
+          </div>
+          <div class="level-item has-text-centered">
+            <div title="Total Character">
+              <p class="heading">Total Character ({{ result.totalChar }})</p>
+              <p class="title">{{ count }}</p>
+            </div>
+          </div>
+          <div class="level-item has-text-centered">
+            <div title="Total Words">
+              <p class="heading">Total Words</p>
+              <p class="title">{{ result.totalWords }}</p>
             </div>
           </div>
           <div class="level-item has-text-centered">
             <div title="Time">
               <p class="heading">TIME</p>
-              <p class="title">00:00</p>
+              <p class="title">
+                <countdown :time="totalTime" :auto-start="false" ref="countdown" @countdownprogress="handleCountdownProgress" @countdownend="handleCountdownEnd">
+                  <template slot-scope="props">{{ props.minutes }}:{{ props.seconds }}</template>
+                </countdown>
+              </p>
             </div>
           </div>
         </nav>
@@ -177,28 +193,38 @@
 
 <script>
 import $ from "jquery";
+import Vue from "vue";
+
+import VueCountdown from "@xkeshi/vue-countdown";
+Vue.component(VueCountdown.name, VueCountdown);
 
 export default {
   name: "EnglishTyping",
   data() {
     return {
-      count: 0,
+      count: 0, // Count Total Character [Include Space and Other Keys],
+      totalTime: 60000, // Total Typing Duration : Millisecond
       word: false,
       lessons: [
-        "India's first bullet train is going to be built between Mumbai and Ahmedabad for various reasons. We are all excited about the same. It will be the fastest mode of transport on the ground between Mumbai and Ahmedabad. Right now, travel time between Mumbai and Ahmedabad through trains is 8 hours. It will be brought down to just 3 hours with the help of bullet trains. But, that is not all that you should be excited about in this venture. Apparently, the train will go travel below the sea for 21 kilometers during the travel. Yes, you heard it right. For a stretch of 21 kilometers, the bullet train will go below the sea, as shown in the video. In a bid to modernize the Indian railways and to make travel by Indian railways an overall pleasant experience, Railway is taking a lot of steps. Suresh Prabhu, India's Railway minister, has emphasized on the importance of upgrading coaches in trains. The railways is planning to do the same and bring the railway coaches on par with those in European countries."
-        // "kathmandu university dhulikhel nepal",
-        // "final project demo presentation at leapfrog technology inc",
-        // "i am bijaya prasad kuikel bijayananda from kathmandu university i learnt so many things and today i completed this project i am really happy to learn this please tell me how are you feeling thank you"
-      ]
+        "India's first bullet train is going to be built between Mumbai and Ahmedabad for various reasons. We are all excited about the same. It will be the fastest mode of transport on the ground between Mumbai and Ahmedabad. Right now, travel time between Mumbai and Ahmedabad through trains is 8 hours. It will be brought down to just 3 hours with the help of bullet trains. But, that is not all that you should be excited about in this venture. Apparently, the train will go travel below the sea for 21 kilometers during the travel. Yes, you heard it right. For a stretch of 21 kilometers, the bullet train will go below the sea, as shown in the video. In a bid to modernize the Indian railways and to make travel by Indian railways an overall pleasant experience, Railway is taking a lot of steps. Suresh Prabhu, India's Railway minister, has emphasized on the importance of upgrading coaches in trains. The railways is planning to do the same and bring the railway coaches on par with those in European countries.",
+        "kathmandu university dhulikhel nepal",
+        "final project demo presentation at leapfrog technology inc",
+        "i am bijaya prasad kuikel bijayananda from kathmandu university i learnt so many things and today i completed this project i am really happy to learn this please tell me how are you feeling thank you"
+      ],
+      isClockStart: false,
+      result: {
+        totalRightChar: 0, // total Right characters
+        totalWrongChar: 0, // total wrong characters
+        totalChar: 0, // total typing content characters
+        totalWords: 0, // total typing content words
+        // https://www.speedtypingonline.com/typing-equations
+        NetWPM: 0, // Gross WPM = (All Typed Entries/5)/Time (min)
+        GrossWPM: 0, // Net WPM = = Gross WPM - (Uncorrected Errors)/Time (min)
+        Accuracy: 0,
+      }
     };
   },
   methods: {
-    getRandomNumber: function(min, max) {
-      var ran = Math.floor(Math.random() * (max - min) + min);
-      // console.log(ran);
-      return ran;
-    },
-
     // this function is main one which generates the lessons/ words
     generateWords: function() {
       var that = this;
@@ -218,6 +244,10 @@ export default {
       newDiv.setAttribute("id", "thisClass");
       lesson.appendChild(newDiv);
 
+      // Total Character and Words
+      that.result.totalChar = that.word.length;
+      that.result.totalWords = that.countWords(that.word);
+
       for (var i = 0; i < that.word.length; i++) {
         var spans = document.createElement("span");
         spans.setAttribute("id", "span" + i);
@@ -227,6 +257,12 @@ export default {
 
       // this piece of code will highlight the first element
       this.highlight(0);
+    },
+
+    getRandomNumber: function(min, max) {
+      var ran = Math.floor(Math.random() * (max - min) + min);
+      // console.log(ran);
+      return ran;
     },
 
     // this function is used to highlight .. it will give hint for which letter to type
@@ -247,13 +283,66 @@ export default {
     checkNewWord: function() {
       if (this.count === this.word.length) {
         // we will reset the value of matched and error to 0 again
-        var tags = document.getElementById("lesson");
-        // delete the class thisclass
-        var deleteid = document.getElementById("thisClass");
-        tags.removeChild(deleteid);
+        // var tags = document.getElementById("lesson");
+        // // delete the class thisclass
+        // var deleteid = document.getElementById("thisClass");
+        // tags.removeChild(deleteid);
         // again lets generate words means we will create the above deleted class again
-        this.generateWords();
+        // this.generateWords();
+        this.$refs.countdown.stop();
       }
+    },
+
+    // Count Total Words in String
+    countWords: function(s) {
+      s = s.replace(/(^\s*)|(\s*$)/gi, ""); //exclude  start and end white-space
+      s = s.replace(/[ ]{2,}/gi, " "); //2 or more space to 1
+      s = s.replace(/\n /, "\n"); // exclude newline with a start spacing
+      return s.split(" ").filter(function(str) {
+        return str != "";
+      }).length;
+    },
+
+    // Format Currencie and Float Character: @return: two char
+    formatFloatNumber: function(value) {
+      var val = (value/1).toFixed(2).replace('.', '.');
+      return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    },
+
+    // Count Real-Time Typing Speed
+    countTypingSpeed: function(totalMinutes) {
+      // Gross WPM = (All Typed Entries/5)/Time (min)
+      // Net WPM = Gross WPM - (Uncorrected Errors)/Time (min)
+      // Accuracy = (Total Corrected Entries/Total Entries) * 100
+      var gross_wpm = (this.count/5)/totalMinutes;
+      var net_wpm = gross_wpm - (this.result.totalWrongChar/totalMinutes);
+      var accuracy = ((this.result.totalRightChar/this.count) * 100);
+
+      this.result.NetWPM = this.formatFloatNumber(net_wpm);
+      this.result.GrossWPM = this.formatFloatNumber(gross_wpm);
+      this.result.Accuracy = this.formatFloatNumber(accuracy);
+    },
+
+    // This event fires when the countdown is in progress.
+    handleCountdownProgress: function(data) {
+      // console.log("days : " + data.days);
+      // console.log("hours : " + data.hours);
+      // console.log("minutes : " + data.minutes);
+      // console.log("seconds : " + data.seconds);
+      // console.log("totalDays : " + data.totalDays);
+      // console.log("totalHours : " + data.totalHours);
+      // console.log("totalMinutes : " + data.totalMinutes);
+      // console.log("totalSeconds : " + data.totalSeconds);
+      // console.log("Total Time Duration : " + this.totalTime);
+      // console.log("Run Time Duration : " + (this.totalTime - ((data.minutes * 60) + data.seconds)));
+      // debugger
+      // Count Typing Speed
+      this.countTypingSpeed(((this.totalTime / 1000) - ((data.minutes * 60) + data.seconds))/60);
+    },
+
+    // This event fires when the countdown stops.
+    handleCountdownEnd: function() {
+      alert("Stop Countdown");
     }
   },
   mounted() {
@@ -300,6 +389,12 @@ export default {
       var keyCode = event.code; // keyboard key code
       var isShift = event.shiftKey; // shift key active
       var isCapsLockValue = event.getModifierState("CapsLock"); // CapsLock key active
+
+      // Start Time Clock
+      if (that.isClockStart === false) {
+        that.$refs.countdown.start();
+        that.isClockStart = true;
+      }
 
       // console.log(event.which);
       // console.log(isCapsLockValue);
@@ -398,6 +493,9 @@ export default {
         var cnt = that.count + 1;
         that.highlight(cnt);
 
+        // Decrease Number in Total Typing Character
+        --that.result.totalChar;
+
         // var inputToNum = String.fromCharCode(keyValue).toLowerCase();
         var inputToNum = key;
         // console.log("Input Value : " + inputToNum);
@@ -406,7 +504,8 @@ export default {
         // console.log("Word Value : " + check);
 
         if (inputToNum === check) {
-          // console.log("Word Matched.");
+          console.log("Word Matched.");
+          ++that.result.totalRightChar;
           var getSpan = document.getElementById("span" + that.count);
           getSpan.style.color = "blue";
           getSpan.style.background = "none";
@@ -416,6 +515,7 @@ export default {
           that.count++;
         } else {
           console.error("Word Not Matched.");
+          ++that.result.totalWrongChar;
           var getSpan = document.getElementById("span" + that.count);
           getSpan.style.color = "white";
           getSpan.style.background = "red";
